@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just Kidding 😈</title>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #090909;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    min-height: 100vh;
+  }
+
+  .page {
+    padding: 35px 18px;
+    max-width: 520px;
+    margin: auto;
+  }
+
+  h1 { font-size: 30px; }
+  p { color: #ccc; line-height: 1.6; }
+
+  button {
+    background: #ff3155;
+    color: white;
+    border: 0;
+    padding: 13px 22px;
+    margin: 8px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .hidden { display: none; }
+
+  #warning h1 { color: #ff3655; }
+  #scan {
+    color: #ff526a;
+    margin: 25px 0;
+    font-size: 18px;
+  }
+
+  .bar {
+    background: #292929;
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 18px 0;
+  }
+
+  #progress {
+    background: #ff3155;
+    width: 0%;
+    height: 100%;
+  }
+
+  #gameArea {
+    position: relative;
+    height: 310px;
+    background: #171727;
+    border: 1px solid #44446b;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-top: 18px;
+    touch-action: manipulation;
+  }
+
+  #star {
+    position: absolute;
+    display: none;
+    font-size: 38px;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .score {
+    font-size: 18px;
+    color: #ffe477;
+  }
+
+  small { color: #888; }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <section id="warning">
+    <div style="font-size:55px">⚠️</div>
+    <h1>YOUR DEVICE HAS BEEN HACKED!</h1>
+    <h2>STOP STALKING ME 😈</h2>
+    <p>Checking your device...</p>
+    <div class="bar"><div id="progress"></div></div>
+    <div id="scan">Initializing fake scan...</div>
+    <button onclick="reveal()">Skip prank 😂</button>
+    <small><br>This is only a joke. No device scan is happening.</small>
+  </section>
+
+  <section id="joke" class="hidden">
+    <div style="font-size:65px">😂</div>
+    <h1>JUST KIDDING!</h1>
+    <p>Your device is safe! ❤️</p>
+    <p>You really thought I hacked you? 💀</p>
+    <button onclick="startGame()">PLAY A GAME 🎮</button>
+  </section>
+
+  <section id="game" class="hidden">
+    <h1>⭐ Catch the Stars ⭐</h1>
+    <p>Tap as many stars as you can in 15 seconds!</p>
+    <div class="score">
+      Score: <span id="score">0</span> |
+      Time: <span id="time">15</span>s
+    </div>
+
+    <div id="gameArea">
+      <button id="star" aria-label="Catch star"
+        onclick="catchStar()">⭐</button>
+      <p id="gameMessage" style="padding:35px 12px">
+        Press START and catch the stars!
+      </p>
+    </div>
+
+    <button id="startButton" onclick="startRound()">
+      START GAME 🚀
+    </button>
+    <button onclick="startGame()">RESET</button>
+    <p id="result"></p>
+  </section>
+
+</div>
+
+<script>
+  let scanTimer;
+  let gameTimer;
+  let score = 0;
+  let timeLeft = 15;
+  let playing = false;
+
+  const scanMessages = [
+    "Scanning files... just kidding 👀",
+    "Detecting stalker energy... 😂",
+    "Checking your memes...",
+    "Almost hacked... NOT REALLY!"
+  ];
+
+  let scanIndex = 0;
+
+  function reveal() {
+    clearInterval(scanTimer);
+    document.getElementById("warning").classList.add("hidden");
+    document.getElementById("joke").classList.remove("hidden");
+  }
+
+  scanTimer = setInterval(() => {
+    const progress = document.getElementById("progress");
+    const current = parseInt(progress.style.width) || 0;
+    progress.style.width = Math.min(current + 10, 100) + "%";
+
+    document.getElementById("scan").textContent =
+      scanMessages[scanIndex % scanMessages.length];
+    scanIndex++;
+
+    if (current >= 90) reveal();
+  }, 400);
+
+  function startGame() {
+    clearInterval(gameTimer);
+    playing = false;
+    document.getElementById("joke").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+    document.getElementById("star").style.display = "none";
+    document.getElementById("score").textContent = "0";
+    document.getElementById("time").textContent = "15";
+    document.getElementById("gameMessage").textContent =
+      "Press START and catch the stars!";
+    document.getElementById("result").textContent = "";
+    document.getElementById("startButton").disabled = false;
+  }
+
+  function startRound() {
+    clearInterval(gameTimer);
+    score = 0;
+    timeLeft = 15;
+    playing = true;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("time").textContent = timeLeft;
+    document.getElementById("result").textContent = "";
+    document.getElementById("gameMessage").textContent = "";
+    document.getElementById("startButton").disabled = true;
+
+    moveStar();
+    document.getElementById("star").style.display = "block";
+
+    gameTimer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("time").textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        playing = false;
+        clearInterval(gameTimer);
+        document.getElementById("star").style.display = "none";
+        document.getElementById("gameMessage").textContent =
+          "TIME'S UP! 🎉";
+        document.getElementById("result").textContent =
+          "You caught " + score + " stars! Share this prank with a friend 😂";
+        document.getElementById("startButton").disabled = false;
+        document.getElementById("startButton").textContent =
+          "PLAY AGAIN 🔁";
+      }
+    }, 1000);
+  }
+
+  function moveStar() {
+    const area = document.getElementById("gameArea");
+    const star = document.getElementById("star");
+    const maxX = area.clientWidth - 35;
+    const maxY = area.clientHeight - 35;
+
+    star.style.left = (20 + Math.random() * Math.max(0, maxX - 20)) + "px";
+    star.style.top = (20 + Math.random() * Math.max(0, maxY - 20)) + "px";
+  }
+
+  function catchStar() {
+    if (!playing) return;
+    score++;
+    document.getElementById("score").textContent = score;
+    moveStar();
+  }
+</script>
+</body>
+</html>
